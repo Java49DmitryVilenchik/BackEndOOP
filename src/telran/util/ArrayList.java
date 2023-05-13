@@ -32,6 +32,15 @@ public class ArrayList<T> implements List<T> {
 	}
 	@Override
 	public void add(int index, T obj) {
+		if (index<0 || index>size) {
+			throw new IndexOutOfBoundsException(index);
+		}
+		if (obj==null) {
+			throw new NullPointerException();
+		}
+		if (isEqual(obj, obj)==false) {
+			throw new IllegalArgumentException();
+		}
 		if(size==array.length) {
 			reallocate();
 		}
@@ -42,7 +51,13 @@ public class ArrayList<T> implements List<T> {
 	}
 
 	@Override
-	public T remove(int index) {	
+	public T remove(int index) {
+		if (index<0 || index>=size) {
+			throw new IndexOutOfBoundsException(index);
+		}
+		if (array[index]==null) {
+			throw new UnsupportedOperationException();
+		}
 		T removed=array[index];
 		System.arraycopy(array, index+1, array, index, size-1-index);
 		size--;
@@ -50,9 +65,12 @@ public class ArrayList<T> implements List<T> {
 	}
 
 	@Override
-	public T get(int index) {		
-		T resault=array[index];
-		return resault;
+	public T get(int index) {
+		if (index<0 || index>=size) {
+			throw new IndexOutOfBoundsException(index);
+		}
+		T res=array[index];
+		return res;
 	}
 	@Override
 	public int size() {

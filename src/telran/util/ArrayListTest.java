@@ -57,11 +57,16 @@ void setUp() {
 		list.add(8, 300);
 		runTest(expected0_500_3_700_8_300);
 		
+		assertThrowsExactly(IndexOutOfBoundsException.class,() -> list.add(list.size()+1, 10));
+		assertThrowsExactly(IndexOutOfBoundsException.class,() -> list.add(-1, 10));
+		assertThrowsExactly(NullPointerException.class,() -> list.add(1, null));
 		
 	}
 	@Test
 	void testGetIndex() {
 		assertEquals(10, list.get(0));
+		assertThrowsExactly(IndexOutOfBoundsException.class,
+				() -> list.get(list.size()));
 	}
 	private void runTest(Integer[] expected) {
 		int size=list.size();
@@ -126,6 +131,13 @@ void setUp() {
 		assertEquals(30, list.remove(3));
 		runTest(expectedNo10_50_30);
 		
+		//Integer [] expected= { -20, null, 7, 50, 100, 30};
+		ArrayList<Integer> expected=new ArrayList<>();
+		assertThrowsExactly(IndexOutOfBoundsException.class, ()-> expected.remove(0));
+		expected.add(20);
+		expected.add(null);
+		expected.add(10);
+		assertThrowsExactly(UnsupportedOperationException.class, ()-> expected.remove(1));
 		}
 	@Test
 	void toArray() {
