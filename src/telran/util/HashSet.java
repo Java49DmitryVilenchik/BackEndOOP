@@ -10,26 +10,25 @@ public class HashSet<T> implements Set<T> {
 	private int size;
 	private class HashSetIterator implements Iterator<T> {
 //
-		private int tableIndex;
-        private Iterator<T> listIterator;	
-
-
-        public HashSetIterator() {
+		
+		int tableIndex; //current index iterator        
+		Iterator<T> listIterator;	
+        
+		HashSetIterator() {   //constructor
             tableIndex = 0;
             listIterator = null;
         }
 //        
 		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			//return false;
+			
 			boolean res=false;
 		    while (tableIndex < hashTable.length) {
 		        if (listIterator != null && listIterator.hasNext()) {
 		            res=true;
 		            return res;
 		        }
-		        if (hashTable[tableIndex] != null) { // && !hashTable[tableIndex].isEmpty()
+		        if (hashTable[tableIndex] != null && hashTable[tableIndex].size()!=0) { // && !hashTable[tableIndex].isEmpty
 		            listIterator = hashTable[tableIndex].iterator();
 		            res=true;		            
 		        }
