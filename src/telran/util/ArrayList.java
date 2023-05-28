@@ -2,261 +2,180 @@ package telran.util;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class ArrayList<T> implements List<T> {
 	private static final int DEFAULT_CAPACITY = 16;
 	private T[] array;
 	private int size;
-	@SuppressWarnings("unchecked")
-	public ArrayList(int capacity) {
-		array=(T[]) new Object[capacity];
+	
+private class ArrayListIterator implements Iterator<T> {
+int currentIndex = 0;
+boolean flNext = false;
+	@Override
+	public boolean hasNext() {
+		
+		return currentIndex < size;
 	}
-	public ArrayList() {
-		this(DEFAULT_CAPACITY);
-		// or array=(T[]) new Object[DEFAULT_CAPACITY];
+
+	@Override
+	public T next() {
+		if(!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		flNext = true;
+		return array[currentIndex++];
 	}
 	@Override
+	public void remove() {
+		if(!flNext) {
+			throw new IllegalStateException();
+		}
+		ArrayList.this.remove(--currentIndex);
+		flNext = false;
+	}
+	
+}
+	@SuppressWarnings("unchecked")
+	public ArrayList(int capacity) {
+		array = (T[]) new Object[capacity];
+	}
+
+	public ArrayList() {
+		this(DEFAULT_CAPACITY);
+	}
+
+	@Override
 	public boolean add(T obj) {
-		if(size==array.length) {
+		if (size == array.length) {
 			reallocate();
 		}
-		array[size]=obj;
+		array[size] = obj;
 		size++;
 		return true;
 	}
+	@Override
+	public boolean removeIf(Predicate<T> predicate) {
+		//TODO rewrite the removeIf method of ArrayList for optimization (O[N])
+		int oldSize = size;
+		int indexDest = 0;
+		for(int indexSrc = 0; indexSrc < oldSize; indexSrc++) {
+			if (predicate.test(array[indexSrc])) {
+				size--;
+			} else {
+				array[indexDest++] = array[indexSrc];
+			}
+		}
+		for (int i = size; i < oldSize; i++) {
+			array[i] = null;
+		}
+		return oldSize > size;		
+	}
 
 	private void reallocate() {
-		array=Arrays.copyOf(array, array.length * 2);
-		
+		array = Arrays.copyOf(array, array.length * 2);
+
 	}
+
 	@Override
 	public void add(int index, T obj) {
-		if (index<0 || index>size) {
+		if (index < 0 || index > size) {
 			throw new IndexOutOfBoundsException(index);
 		}
-		if (obj==null) {
-			throw new NullPointerException();
-		}
-		if (isEqual(obj, obj)==false) {
-			throw new IllegalArgumentException();
-		}
-		if(size==array.length) {
+		if (size == array.length) {
 			reallocate();
 		}
-		System.arraycopy(array, index, array, index+1, size-index);
-		array[index]=obj;
+		System.arraycopy(array, index, array, index + 1, size - index);
+		array[index] = obj;
 		size++;
-				
 	}
 
 	@Override
 	public T remove(int index) {
-		if (index<0 || index>=size) {
+		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException(index);
 		}
-		if (array[index]==null) {
-			throw new UnsupportedOperationException();
-		}
-		T removed=array[index];
-		System.arraycopy(array, index+1, array, index, size-1-index);
+		T res = array[index];
+
+		System.arraycopy(array, index + 1, array, index, size - index - 1);
 		size--;
-		return removed;
+		array[size]=null;
+		return res;
 	}
 
 	@Override
 	public T get(int index) {
-		if (index<0 || index>=size) {
+		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException(index);
 		}
-		T res=array[index];
+		T res = array[index];
 		return res;
 	}
+
 	@Override
 	public int size() {
-		
+
 		return size;
 	}
-	@Override
-	public boolean remove(T pattern) {
-		boolean res=false;
-		int index=0;
-		while(index < size && res==false) {
-			if (isEqual(array[index], pattern)) {
-				System.arraycopy(array, index+1, array, index, size-1-index);
-				size--;
-				res=true;
-			}
-			index++;
-		}
-		return res;		
-		
-	}
-	//@Override
-	//public T[] toArray(T[] array) {
-	//	T[] res=array;
-	//	if (array.length<=size) {
-	//		for (int i=0; i<array.length; i++) {
-	//			res[i]=array[i];
-	//		}			
-	//	}
-		
-	//		else {
-	//			for (int i=0; i<array.length; i++) {
-	//				if (i<size)
-	//				{res[i]=array[i];}
-	//				else res[i]=null;
-	//			}
-				
-	//		}
-	
-	//	return res;
-//}
-	@Override
-	public T[] toArray(T[] buffer) {
-		T[] res = buffer;
-		if(buffer.length < size) {
-			res = (T[]) Arrays.copyOf(array, size, buffer.getClass());
-		} else {
-			System.arraycopy(array, 0, res, 0, size );
-			if(res.length > size) {
-				res[size] = null;
-			}
-		}
-		return res;
-	}
-	//@Override
-	//public T[] toArray(T[] array) {
-	//	System.arraycopy(array, 0, array, 0, size);
-	//	return array;
-	//}
-	
-	//@SuppressWarnings("unchecked")
-	//@Override
-	//public T[] toArray(T[] array) {
-	//	T[] res=array;
-	//	if (array.length<=size) {
-	//		res=(T[]) Arrays.copyOf(array, size, array.getClass());
-	//	} else {
-	//	System.arraycopy(array, 0, res, 0, size);
-	//	if (res.length>size) {
-	//		res[size]=null;
-	//	}
-	//	}
-	//	return res;
-	//}
-		
-	@Override
-	public int indexOf(T pattern) {
-		int res=-1;
-		int index=0;
-		while(index < size && res==-1) {
-			if (isEqual(array[index], pattern)) {
-				res=index;
-			}
-			index++;
-		}
-		return res;
-	}
-	private boolean isEqual(T object, T pattern) {
-		
-		return pattern==null ? object==pattern : pattern.equals(object);
-	}
-	@Override
-	public int lastIndexOf(T pattern) {
-		int res=-1;
-		int index=size-1;
-		while(index >= 0 && res==-1) {
-			if (isEqual(array[index], pattern)) {
-				res=index;
-			}
-			index--;
-		}
-		return res;
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public void sort() {
-		//Arrays.sort(array, 0, size);	
-		sort((Comparator<T>)Comparator.naturalOrder());
-		
-	}	
+
 	@Override
 	public void sort(Comparator<T> comp) {
+		int n = size;
+		boolean flUnSort = true;
+		do {
+			flUnSort = false;
+			n--;
+			for(int i = 0; i < n; i++) {
+				if (comp.compare(array[i], array[i + 1]) > 0) {
+					swap(i);
+					flUnSort = true;
+				}
+			}
+		}while(flUnSort);
 		
-		Arrays.sort(array, 0, size, comp);  //rewrite
-		
-		
-	//	boolean isSorted = false;
-	//        T buf;
-	//        while(!isSorted) {
-	//            isSorted = true;
-	//            for (int i = 0; i < array.length-1; i++) {
-	                //if (array[i] > array[i+1]){
-	            	//if ((Comparable<T>)array[i].compareTo(array[i+1])>0){	
-	//            	if (comp.compare(array[i], array[i+1])>0){
-	//                    isSorted = false;
-	 //
-	//                    buf = array[i];
-	//                   array[i] = array[i+1];
-	//                    array[i+1] = buf;
-	//                }
-	//            }
-	//        }
 	}
+
+	private void swap(int i) {
+		T tmp = array[i];
+		array[i] = array[i + 1];
+		array[i + 1] = tmp;
+		
+	}
+
 	@Override
 	public int indexOf(Predicate<T> predicate) {
-		int res=-1;
-		int index=0;
-		while(index < size && res==-1) {
+		int res = -1;
+		int index = 0;
+		while (index < size && res == -1) {
 			if (predicate.test(array[index])) {
-				res=index;
+				res = index;
 			}
 			index++;
 		}
 		return res;
 	}
+
 	@Override
 	public int lastIndexOf(Predicate<T> predicate) {
-		int res=-1;
-		int index=size-1;
-		while(index >= 0 && res==-1) {
+		int res = -1;
+		int index = size - 1;
+		while (index >= 0 && res == -1) {
 			if (predicate.test(array[index])) {
-				res=index;
+				res = index;
 			}
 			index--;
 		}
 		return res;
 	}
+
+	
 	@Override
-	public boolean removeIf(Predicate<T> predicate) {
-		int oldSize=size;
-		int index=0;
-		while (index < size) { 
-			
-			if (predicate.test(array[index])) {
-					
-					remove(index);
-					
-			} else			
-			index++;
-		}
+	public Iterator<T> iterator() {
 		
-		return oldSize>size;	
-	
-//	@Override
-//	public boolean removeIf(Predicate<T> predicate) {
-//		int currentSize=size;
-//		int index=0;
-//		for (int i=0; i<currentSize; i++) {
-//			if (!predicate.test(array[i])) {
-//				array[index++]=array[i];
-//			}
-//		}
-//		size=index;
-//		return currentSize!=size;
+		return new ArrayListIterator();
 	}
-	
-			
+
 
 }
