@@ -38,4 +38,5 @@ default int lastIndexOf(T pattern) {
 	return lastIndexOf(obj -> isEqual(obj, pattern));
 }
 
+
 }

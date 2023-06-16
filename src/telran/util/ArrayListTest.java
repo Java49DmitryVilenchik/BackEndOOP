@@ -1,5 +1,4 @@
 package telran.util;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,4 +15,5 @@ class ArrayListTest  extends ListTest{
 	protected <T> List<T> getList() {
 		return new ArrayList<>();
 	}
+
 }

@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 public class Range implements Iterable<Integer> {
 	private int min;
 	private int max;
-	private List<Integer> removedList=new LinkedList<>();
+	private Collection<Integer> removedList = new HashSet<>();
 	public Range(int min, int max) {
 		if (min >= max) {
 			throw new IllegalArgumentException("min must be less than max");
@@ -15,9 +15,9 @@ public class Range implements Iterable<Integer> {
 		this.max = max;
 	}
 	private class RangeIterator implements Iterator<Integer> {
-		Integer current=getCurrent(min-1);
-		Integer prev=null;
-		boolean flNext=false;		
+		Integer current = getCurrent(min - 1);
+		Integer prev = null;
+		boolean flNext = false;
 		@Override
 		public boolean hasNext() {
 			
@@ -46,13 +46,15 @@ public class Range implements Iterable<Integer> {
 			}
 			return res;
 		}
+
 		@Override
 		public void remove() {
 			if(!flNext) {
 				throw new IllegalStateException();
 			}
 			removedList.add(prev);
-			flNext=false;
+			flNext = false;
+			
 		}
 		
 	}
@@ -62,7 +64,7 @@ public class Range implements Iterable<Integer> {
 		return new RangeIterator();
 	}
 	public Integer[] toArray() {
-		Integer [] array = new Integer[max - min];
+		Integer [] array = new Integer[getSize()];
 		int index = 0;
 		//First way
 //		for(Integer num: this) {
@@ -90,5 +92,6 @@ public class Range implements Iterable<Integer> {
 	private int getSize() {
 		return max - min - removedList.size();
 	}
+	
 
 }
