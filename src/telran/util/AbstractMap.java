@@ -1,82 +1,69 @@
 package telran.util;
 
-import java.util.*;
-
 public abstract class AbstractMap<K, V> implements Map<K, V> {
-    protected Set<Entry<K, V>> set;
+	protected Set<Entry<K, V>> set;
+	@Override
+	public V get(K key) {
+		Entry<K, V> entry = set.get(new Entry<>(key, null));
+		
+		return entry == null ? null : entry.getValue();
+	}
 
-    @Override
-    public V get(K key) {
-        Entry<K, V> entry = new Entry<>(key, null);
-        return set.stream()
-                .filter(e -> e.equals(entry))
-                .findFirst()
-                .map(Entry::getValue)
-                .orElse(null);
-    }
+	@Override
+	public V put(K key, V value) {
+		Entry<K, V> entry = set.get(new Entry<>(key, null));
+		V res = null;
+		if (entry != null) {
+			res = entry.getValue();
+			entry.setValue(value);
+		} else {
+			set.add(new Entry<>(key, value));
+		}
+		return res;
+	}
 
-    @Override
-    public V put(K key, V value) {
-        Entry<K, V> entry = new Entry<>(key, null);
-        Optional<Entry<K, V>> existingEntry = set.stream()
-                .filter(e -> e.equals(entry))
-                .findFirst();
-        if (existingEntry.isPresent()) {
-            V oldValue = existingEntry.get().getValue();
-            existingEntry.get().setValue(value);
-            return oldValue;
-        } else {
-            set.add(new Entry<>(key, value));
-            return null;
-        }
-    }
+	@Override
+	public boolean containsKey(K key) {
+		
+		return set.contains(new Entry<K, V>(key, null));
+	}
 
-    @Override
-    public boolean containsKey(K key) {
-        Entry<K, V> entry = new Entry<>(key, null);
-        return set.contains(entry);
-    }
+	@Override
+	public boolean containsValue(V value) {
+		
+		return set.stream().anyMatch(e -> e.getValue().equals(value));
+	}
 
-    @Override
-    public boolean containsValue(V value) {
-        return set.stream()
-                .anyMatch(e -> Objects.equals(e.getValue(), value));
-    }
+	@Override
+	public Set<K> keySet() {
+		Set<K> res = getKeySet();
+		set.stream().map(e -> e.getKey()).forEach(key -> res.add(key));
+		return res;
+	}
 
-    @Override
-    public Set<K> keySet() {
-        Set<K> keys = new HashSet<>();
-        for (Entry<K, V> entry : set) {
-            keys.add(entry.getKey());
-        }
-        return keys;
-    }
+	abstract protected Set<K> getKeySet();
 
-    @Override
-    public Collection<V> values() {
-        List<V> values = new ArrayList<>();
-        for (Entry<K, V> entry : set) {
-            values.add(entry.getValue());
-        }
-        return values;
-    }
+	@Override
+	public Collection<V> values() {
+		List<V> res = new ArrayList<V>();
+		set.stream().map(e -> e.getValue()).forEach(v -> res.add(v));
+		return res;
+	}
 
-    @Override
-    public Set<Entry<K, V>> entrySet() {
-        return set;
-    }
+	@Override
+	public Set<Entry<K, V>> entrySet() {
+		
+		return set;
+	}
+	@Override
+	public V remove(K key) {
+		Entry<K, V> entry = set.get(new Entry<K, V>(key, null));
+		V res = null;
+		if(entry != null) {
+			res = entry.getValue();
+			set.remove(entry);
+		}
+		return res;
+	}
 
-    @Override
-    public V remove(K key) {
-        Iterator<Entry<K, V>> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            Entry<K, V> entry = iterator.next();
-            if (Objects.equals(entry.getKey(), key)) {
-                iterator.remove();
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
 }
-
