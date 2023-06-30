@@ -30,7 +30,7 @@ public static String  ipV4() {
 public static String arithmeticExpression() {
 	String operandRE=operand();
 	String operatorRE=operator();
-	return String.format("%1$s(%2$s%1$s)*", operandRE, operatorRE);
+	return String.format("%1$s(\\s*%2$s\\s*%1$s)*", operandRE, operatorRE);
 }
 public static String operator() {
 	
@@ -41,7 +41,7 @@ public static String operand() {
 	return "(\\d+)";
 }
 public static boolean isArithmeticExpression(String expression) {
-	expression=expression.replaceAll("\\s+", "");
+	expression=expression.trim();
 	return expression.matches(arithmeticExpression());
 }
 }

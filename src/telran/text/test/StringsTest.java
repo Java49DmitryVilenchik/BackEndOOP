@@ -123,13 +123,14 @@ class StringsTest {
 	void arithmeticExpressionTest() {
 		assertTrue(Strings.isArithmeticExpression(" 12 "));
 		assertTrue(Strings.isArithmeticExpression(" 12/ 300 "));
+		assertTrue(Strings.isArithmeticExpression("12/300"));
 		assertTrue(Strings.isArithmeticExpression(" 12* 2 /500 + 1000 "));
 		assertTrue(Strings.isArithmeticExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));
 		
-		assertFalse(Strings.isArithmeticExpression(" 12 =18"));
+		assertFalse(Strings.isArithmeticExpression(" 12 18"));
 		assertFalse(Strings.isArithmeticExpression(" 12/3&4"));
 		assertFalse(Strings.isArithmeticExpression(" 12+ 20 -"));
-		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 --10"));
+		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 10"));
 		
 	}
 }
