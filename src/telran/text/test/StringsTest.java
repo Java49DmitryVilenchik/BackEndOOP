@@ -1,8 +1,15 @@
 package telran.text.test;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
+import java.util.NoSuchElementException;
+//import junit.framework.Assert;
 
 import telran.text.Strings;
 
@@ -121,11 +128,11 @@ class StringsTest {
 	}
 	@Test
 	void arithmeticExpressionTest() {
-		assertTrue(Strings.isArithmeticExpression(" 12 "));
-		assertTrue(Strings.isArithmeticExpression(" 12/ 300 "));
-		assertTrue(Strings.isArithmeticExpression("12/300"));
-		assertTrue(Strings.isArithmeticExpression(" 12* 2 /500 + 1000 "));
-		assertTrue(Strings.isArithmeticExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));
+		assertTrue(Strings.isArithmeticExpression(" 12 "));//12
+		assertTrue(Strings.isArithmeticExpression(" 12/ 6 "));//2
+		assertTrue(Strings.isArithmeticExpression("12/2"));//6
+		assertTrue(Strings.isArithmeticExpression(" 12* 2 /3 + 1000 ")); //1008
+		assertTrue(Strings.isArithmeticExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));//0
 		
 		assertFalse(Strings.isArithmeticExpression(" 12 18"));
 		assertFalse(Strings.isArithmeticExpression(" 12/3&4"));
@@ -133,4 +140,40 @@ class StringsTest {
 		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 10"));
 		
 	}
+	@Test
+	void computeExpressionTest() {
+	    assertEquals(12.0, Strings.computeExpression(" 12 ", new HashMap<>()));
+	    assertEquals(2.0, Strings.computeExpression(" 12/ 6 ", new HashMap<>()));
+	    assertEquals(6.0, Strings.computeExpression("12/2", new HashMap<>()));
+	    assertEquals(1008.0, Strings.computeExpression(" 12*  2 / 3 + 1000 ", new HashMap<>()));
+	    assertEquals(0.6024, Strings.computeExpression(" 120 / 50 + 100 - 2 * 3 / 500 ", new HashMap<>()));
+
+	    HashMap<String, Double> mapVariables = new HashMap<>();
+        mapVariables.put("x", 5.0);
+        mapVariables.put("y", 2.0);
+        mapVariables.put("z", 3.0);
+//        assertEquals(2.5, Strings.computeExpression(" x / y ", mapVariables));
+//        assertEquals(0.0, Strings.computeExpression(" x - y - z ", mapVariables));
+	    
+	}
+	@Test
+    void javaVariableNameTest1() {
+        String regex = Strings.javaVariableName();
+        assertTrue("a".matches(regex));
+        assertTrue("$".matches(regex));
+        assertTrue("$2".matches(regex));
+        assertTrue("$_".matches(regex));
+        assertTrue("__".matches(regex));
+        assertTrue("_2".matches(regex));
+        assertTrue("a_b".matches(regex));
+        assertTrue("A_B".matches(regex));
+        assertTrue("abc12345678900000".matches(regex));
+        assertFalse("1a".matches(regex));
+        assertFalse("_".matches(regex));
+        assertFalse("a#".matches(regex));
+        assertFalse("a b".matches(regex));
+        assertFalse("a-b".matches(regex));
+        assertFalse("A-B".matches(regex));
+        assertFalse(" ab".matches(regex));
+    }
 }
