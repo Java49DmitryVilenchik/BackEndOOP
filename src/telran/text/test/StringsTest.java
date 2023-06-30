@@ -1,8 +1,10 @@
-package telran.text;
+package telran.text.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import telran.text.Strings;
 
 class StringsTest {
 
@@ -86,7 +88,7 @@ class StringsTest {
 		assertFalse(" 3".matches(regex));
 	}
 	@Test
-	void ipv4Test() {
+	void ipv4OctetTest() {
 		String regex=Strings.ipV4Octet();
 		assertTrue("000".matches(regex));
 		assertTrue("00".matches(regex));
@@ -115,5 +117,19 @@ class StringsTest {
 		assertFalse(".1.&2.3.4".matches(regex));
 		assertFalse("1.2.3".matches(regex));
 		assertFalse(".1.2.3.4.5".matches(regex));
+		assertFalse("123 123 123 123".matches(regex));
+	}
+	@Test
+	void arithmeticExpressionTest() {
+		assertTrue(Strings.isArithmeticExpression(" 12 "));
+		assertTrue(Strings.isArithmeticExpression(" 12/ 300 "));
+		assertTrue(Strings.isArithmeticExpression(" 12* 2 /500 + 1000 "));
+		assertTrue(Strings.isArithmeticExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));
+		
+		assertFalse(Strings.isArithmeticExpression(" 12 =18"));
+		assertFalse(Strings.isArithmeticExpression(" 12/3&4"));
+		assertFalse(Strings.isArithmeticExpression(" 12+ 20 -"));
+		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 --10"));
+		
 	}
 }

@@ -19,7 +19,29 @@ public static String  ipV4() {
 	//TODO
 	//four ipV4 octets separated by dot 123.123.255.01
 	String octetRegex = ipV4Octet();
-    return octetRegex + "\\." + octetRegex + "\\." + octetRegex + "\\." + octetRegex;
-
+	String str="\\.";
+    //return octetRegex + "\\." + octetRegex + "\\." + octetRegex + "\\." + octetRegex;
+    //return String.format("(%s\\.){3}%s", octetRegex, octetRegex); // or this
+    return String.format("(%1$s\\.){3}%1$s", octetRegex); // or this
+	//return String.format("%1$s%2$s%1$s%2$s%1$s%2$s%1$s", octetRegex, str); // +
+    //return String.format("%1$s(%2$s%1$s)*", octetRegex, str);  //!!! not good
+	//return String.format(octetRegex + "\\." + octetRegex + "\\." + octetRegex + "\\." + octetRegex);
+}
+public static String arithmeticExpression() {
+	String operandRE=operand();
+	String operatorRE=operator();
+	return String.format("%1$s(%2$s%1$s)*", operandRE, operatorRE);
+}
+public static String operator() {
+	
+	return "([-+*/])";
+}
+public static String operand() {
+	
+	return "(\\d+)";
+}
+public static boolean isArithmeticExpression(String expression) {
+	expression=expression.replaceAll("\\s+", "");
+	return expression.matches(arithmeticExpression());
 }
 }
